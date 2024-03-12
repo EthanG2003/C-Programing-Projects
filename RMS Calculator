@@ -1,0 +1,75 @@
+/**************************************************************
+ * Ethan Gerard
+ * The RMS(Root Mean Square) Calculator
+ * 4/14/2023
+ *
+ * Purpose: Calculating the Root-Mean-Square(RMS) value over one period
+ *          of the sine wave voltage.
+ *
+ ***************************************************************/
+
+#include <stdio.h>
+#include <math.h>
+
+#define Tmin 0.0		//Defining constants
+#define Tmax 6.28
+#define Npts 40
+
+//– Function to Calculate RMS
+
+double rms_calc(const double *Vptr, int N) {
+    int i;
+    double square;
+    double sum;
+    for(i=0; i<Npts; i++) {
+        square = pow((*(Vptr + i)), 2);
+        sum = sum + square;
+    }
+    return sqrt(sum/N);
+}
+
+
+int main(void) {
+
+    double T[Npts];
+    double Vsin[Npts];
+    double Vamp;
+    double Vrms;
+    double *Vptr = Vsin;
+    double *Tptr = T;
+    double Tstep = (Tmax - Tmin)/(Npts-1);
+    int i;
+    int N = Npts;
+
+printf("\nWelcome to the RMS Calculator!\n");
+printf("\n\tEnter the voltage amplitude of your sine wave: ");
+scanf("%lf", &Vamp);
+
+//-- Fill the time array T[]
+
+    *Tptr = Tmin;
+    for(i=1; i<Npts; i++) {
+        *(Tptr+i) = *(Tptr + i - 1) + Tstep;
+    }
+
+
+//-- Fill the sin array Vsin[]
+
+    for(i=0; i<Npts; i++) {
+        *(Vptr+i) = Vamp*sin(*(Tptr+i));
+    }
+
+//-- Calling Square Function
+
+Vrms = rms_calc(Vptr, N);
+printf("\n");
+
+//-- Printing T[], Vsin[], and The RMS value
+
+    for(i=0; i<Npts; i++) {
+        printf("T[%d]=%0.3lf\t Vsin[%d]=%0.3lf\n", i, T[i], i, Vsin[i]);
+    }
+    printf("\nThe RMS value for your sine wave is: %0.3lf Volts.\n", Vrms);
+    return 0;
+}
+
