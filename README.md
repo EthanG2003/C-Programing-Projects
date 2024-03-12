@@ -1,3 +1,9 @@
 # C-Programing-Projects
-What the program is suppose
-Bulet points of main concepts from project
+
+Resistor Calculator will promt user for colors of three bands on a resistor and output the resistance value in ohms.
+
+Code Utilizes
+  fgets()
+  strcmp()
+  strlen()
+  Arrays
