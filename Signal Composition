@@ -1,0 +1,81 @@
+/**************************************************************
+ * Ethan Gerard
+ * File I/O "Signal Composition"
+ * 4/30/2023
+ *
+ * Purpose: Create a series of sine wave arrays that comprise a square wave.
+ *
+ ********************************************************/
+
+#include <stdio.h>
+#include <math.h>
+
+// -- Time Series Range (0s to 1ms, 1 cycle of 1kHz wave)
+#define Tmin 0.0
+#define Tmax 1e-3
+#define Npts 100
+
+//-- Frequency Components of Square Wave
+#define f1 1000.0
+#define f3 3000.0
+#define f5 5000.0
+#define f7 7000.0
+#define f9 9000.0
+
+//-- Magnitude Components of Square Wave
+#define v1 0.637
+#define v3 0.212
+#define v5 0.127
+#define v7 0.091
+#define v9 0.071
+
+#define PI 3.141
+
+int main(void) {
+
+    // Arrays to store time and various sine wave components
+    double T[Npts]; 
+    double Tstep = (Tmax-Tmin)/(Npts-1); // Time step
+    double Vs1[Npts], Vs3[Npts], Vs5[Npts], Vs7[Npts], Vs9[Npts]; // Individual sine wave components
+    double Vs1n3[Npts]; // Sum of Vs1 and Vs3
+    double Vs1n3n5[Npts]; // Sum of Vs1, Vs3, and Vs5
+    double Vs1n3n5n7[Npts]; // Sum of Vs1, Vs3, Vs5, and Vs7
+    double Vs1n3n5n7n9[Npts]; // Final composed signal
+    int i;
+
+    FILE *Sfile; // File pointer
+    Sfile = fopen("square_comp.csv", "w"); // Open a file named "square_comp.csv" for writing
+
+    T[0] = Tmin; // Set initial time
+
+    // Generate time array
+    for(i = 1; i < Npts; i++) {
+        T[i] = T[i-1] + Tstep;
+    }
+
+    // Calculate sine wave values for each frequency component and time point
+    for(i = 0; i < Npts; i++) {
+        Vs1[i] = v1 * sin(2 * PI * f1 * T[i]);
+        Vs3[i] = v3 * sin(2 * PI * f3 * T[i]);
+        Vs5[i] = v5 * sin(2 * PI * f5 * T[i]);
+        Vs7[i] = v7 * sin(2 * PI * f7 * T[i]);
+        Vs9[i] = v9 * sin(2 * PI * f9 * T[i]);
+        
+        // Calculate the composed signals
+        Vs1n3[i] = Vs1[i] + Vs3[i];
+        Vs1n3n5[i] = Vs1n3[i] + Vs5[i];
+        Vs1n3n5n7[i] = Vs1n3n5[i] + Vs7[i];
+        Vs1n3n5n7n9[i] = Vs1n3n5n7[i] + Vs9[i];
+        
+        // Write the time and signal values to the file
+        fprintf(Sfile, "%e,%e,%e,%e,%e,%e,%e,%e,%e,%e\n", T[i], Vs1[i], Vs3[i], Vs5[i], Vs7[i], Vs9[i], Vs1n3[i], Vs1n3n5[i], Vs1n3n5n7[i], Vs1n3n5n7n9[i]);
+
+        // Print the time and signal values to the console
+        printf("%e,%e,%e,%e,%e,%e,%e,%e,%e,%e\n", T[i], Vs1[i], Vs3[i], Vs5[i], Vs7[i], Vs9[i], Vs1n3[i], Vs1n3n5[i], Vs1n3n5n7[i], Vs1n3n5n7n9[i]);
+    }
+
+    // Close the file
+    fclose(Sfile);
+
+    return 0;
+}
